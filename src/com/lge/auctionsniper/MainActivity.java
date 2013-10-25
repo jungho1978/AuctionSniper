@@ -1,7 +1,6 @@
 package com.lge.auctionsniper;
 
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -12,6 +11,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -25,6 +27,7 @@ public class MainActivity extends Activity {
 	
 	private static final String AUCTION_ID = "auction-item-54321@localhost";
 
+	private Button button;
 	private TextView tv;
 	private Chat chat;
 
@@ -33,13 +36,26 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		button = (Button) findViewById(R.id.start_button);
 		tv = (TextView) findViewById(R.id.status);
-		setStatus(R.string.status_joining);
 		
+		button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				run();
+			}
+			
+		});
+	}
+	
+	private void run() {
 		Runnable run = new Runnable() {
-
+			
 			public void run() {
 				try {
+					setStatus(R.string.status_joining);
+					
 					ConnectionConfiguration config = new ConnectionConfiguration(
 							XMPP_SERVER_HOST, XMPP_SERVER_PORT);
 					XMPPConnection connection = new XMPPConnection(config);
@@ -48,14 +64,14 @@ public class MainActivity extends Activity {
 					chat = connection.getChatManager().createChat(
 							AUCTION_ID,
 							new MessageListener() {
-
+								
 								@Override
 								public void processMessage(Chat arg0, Message msg) {
 									if (msg.getBody().contains("CLOSE")) {
 										setStatus(R.string.status_lost);
 									}
 								}
-
+								
 							});
 					Message msg = new Message();
 					msg.setBody("SOLVersion:1.1; Command:JOIN;");
@@ -66,7 +82,6 @@ public class MainActivity extends Activity {
 			}
 		};
 		new Thread(run).start();
-		
 	}
 
 	private void setStatus(final int resId) {

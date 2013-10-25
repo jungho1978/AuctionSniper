@@ -1,27 +1,23 @@
 package com.lge.auctionsniper.test;
 
 import junit.framework.Assert;
+import android.view.View;
 
-import com.google.android.apps.common.testing.ui.espresso.Espresso;
-import com.google.android.apps.common.testing.ui.espresso.ViewAssertion;
-import com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions;
-import com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers;
 import com.jayway.android.robotium.solo.Solo;
-
 import com.lge.auctionsniper.R;
 
 public class SniperRunner {
 	private static final int DEFAULT_TIMEOUT = 2000;
 	
 	private Solo solo;
-	private AuctionSniperEndToEndTest inst;
 
 	public SniperRunner(AuctionSniperEndToEndTest inst) {
-		this.inst = inst;
+		solo = new Solo(inst.getInstrumentation(), inst.getActivity());
 	}
 
 	public void join() {
-		solo = new Solo(inst.getInstrumentation(), inst.getActivity());
+		View view = (View) solo.getView(R.id.start_button);
+		solo.clickOnView(view);
 	}
 
 	public void showsJoiningStatus() {
