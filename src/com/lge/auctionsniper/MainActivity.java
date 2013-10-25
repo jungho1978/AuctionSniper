@@ -15,6 +15,15 @@ import android.view.Menu;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
+	private static final String TAG = "AuctionSniper";
+	
+	private static final String XMPP_SERVER_HOST = "localhost";
+	private static final int XMPP_SERVER_PORT = 5222;
+	
+	private static final String SNIPER_ID = "sniper";
+	private static final String SNIPER_PASSWORD = "sniper";
+	
+	private static final String AUCTION_ID = "auction-item-54321@localhost";
 
 	private TextView tv;
 	private Chat chat;
@@ -25,27 +34,25 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		tv = (TextView) findViewById(R.id.status);
-		setStatus("Joining");
+		setStatus(R.string.status_joining);
 		
 		Runnable run = new Runnable() {
 
 			public void run() {
 				try {
 					ConnectionConfiguration config = new ConnectionConfiguration(
-							"localhost", 5222);
+							XMPP_SERVER_HOST, XMPP_SERVER_PORT);
 					XMPPConnection connection = new XMPPConnection(config);
 					connection.connect();
-					connection.login("sniper", "sniper");
+					connection.login(SNIPER_ID, SNIPER_PASSWORD);
 					chat = connection.getChatManager().createChat(
-							"auction-item-54321@localhost",
+							AUCTION_ID,
 							new MessageListener() {
 
 								@Override
 								public void processMessage(Chat arg0, Message msg) {
-									Log.d("sniper", "MSG: " + msg.getBody());
-									
 									if (msg.getBody().contains("CLOSE")) {
-										setStatus("Lost");
+										setStatus(R.string.status_lost);
 									}
 								}
 
@@ -54,21 +61,19 @@ public class MainActivity extends Activity {
 					msg.setBody("SOLVersion:1.1; Command:JOIN;");
 					chat.sendMessage(msg);
 				} catch (XMPPException e) {
-					Log.d("sniper", " ",e);
+					Log.d(TAG, "", e);
 				}
 			}
 		};
 		new Thread(run).start();
 		
 	}
-	
 
-	private void setStatus(final String status) {
+	private void setStatus(final int resId) {
 		runOnUiThread(new Runnable() {
-			
 			@Override
 			public void run() {
-				tv.setText(status);
+				tv.setText(resId);
 			}
 		});
 	}	

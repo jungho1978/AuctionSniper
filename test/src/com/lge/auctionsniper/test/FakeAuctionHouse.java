@@ -17,6 +17,13 @@ import android.util.Log;
 import junit.framework.Assert;
 
 public class FakeAuctionHouse {
+	private static final String TAG = "FakeAuctionHose";
+	
+	private static final String XMPP_SERVER_HOST = "localhost";
+	private static final int XMPP_SERVER_PORT = 5222;
+	
+	private static final String AUCTION_ID = "auction-item-54321";
+	private static final String AUCTION_PASSWORD = "auction";
 	
 
 	private ArrayBlockingQueue<Message> queue = new ArrayBlockingQueue<Message>(1);
@@ -25,10 +32,10 @@ public class FakeAuctionHouse {
 	public void startSellingItem() {
 		try {
 			ConnectionConfiguration config = new ConnectionConfiguration(
-					"localhost", 5222);
+					XMPP_SERVER_HOST, XMPP_SERVER_PORT);
 			XMPPConnection connection = new XMPPConnection(config);
 			connection.connect();
-			connection.login("auction-item-54321", "auction");
+			connection.login(AUCTION_ID, AUCTION_PASSWORD);
 			ChatManager chatmanager = connection.getChatManager();
 			chatmanager.addChatListener(new ChatManagerListener() {
 				@Override
@@ -49,10 +56,8 @@ public class FakeAuctionHouse {
 				}
 			});
 		} catch (XMPPException e) {
-			Log.d("sniper", " ", e);
+			Log.d(TAG, "", e);
 		}
-		// login with its own account info. (auction-item-54321@domain)
-		// listen to chat created
 	}
 
 	public void hasReceivedJoinCommandFromSniper() throws InterruptedException {
