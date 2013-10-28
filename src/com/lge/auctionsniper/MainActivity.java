@@ -1,5 +1,7 @@
 package com.lge.auctionsniper;
 
+import java.util.HashMap;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
@@ -66,15 +68,31 @@ public class MainActivity extends Activity {
 							new MessageListener() {
 								
 								@Override
-								public void processMessage(Chat arg0, Message msg) {
+								public void processMessage(Chat chat, Message msg) {
 									if (msg.getBody().contains("CLOSE")) {
 										setStatus(R.string.status_lost);
+									} else if (msg.getBody().contains("PRICE")) {
+										setStatus(R.string.status_bidding);
+										
+										Log.d(TAG, msg.getBody());
+										
+										HashMap<String, String> event = parse(msg);
+										int price = Integer.parseInt(event.get("CurrentPrice"));
+										int increment = Integer.parseInt(event.get("Increment"));
+
+										Message bidCommand = new Message();
+										bidCommand.setBody("SOLVersion: 1.1; Command: BID; Price: " + (price + increment) + ";");
+										try {
+											chat.sendMessage(bidCommand);
+										} catch (XMPPException e) {
+											Log.d(TAG, "", e);
+										}
 									}
 								}
 								
 							});
 					Message msg = new Message();
-					msg.setBody("SOLVersion:1.1; Command:JOIN;");
+					msg.setBody("SOLVersion: 1.1; Command: JOIN;");
 					chat.sendMessage(msg);
 				} catch (XMPPException e) {
 					Log.d(TAG, "", e);
@@ -82,6 +100,19 @@ public class MainActivity extends Activity {
 			}
 		};
 		new Thread(run).start();
+	}
+	
+	private HashMap<String, String> parse(Message message) {
+		HashMap<String, String> event = new HashMap<String, String>();
+		
+		String[] elements = message.getBody().split(";");
+		
+		for (String element : elements) {
+			String[] pair = element.split(":");
+			event.put(pair[0].trim(), pair[1].trim());
+		}
+		
+		return event;
 	}
 
 	private void setStatus(final int resId) {
@@ -98,6 +129,11 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	public void auctionClosed() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

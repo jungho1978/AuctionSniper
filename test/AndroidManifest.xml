@@ -7,7 +7,7 @@
     <uses-sdk android:minSdkVersion="8" />
 
     <instrumentation
-        android:name="com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
+        android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="com.lge.auctionsniper" />
 
     <application
