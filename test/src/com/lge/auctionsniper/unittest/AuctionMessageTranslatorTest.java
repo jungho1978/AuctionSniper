@@ -21,7 +21,7 @@ public class AuctionMessageTranslatorTest extends TestCase {
 	public void testSniperClosedCalledWhenCloseMessageReceived() {
 		context.checking(new Expectations(){
 			{
-				oneOf(listener).auctionClosed();
+				one(listener).auctionClosed();
 			}
 		});
 		
@@ -35,7 +35,7 @@ public class AuctionMessageTranslatorTest extends TestCase {
 	public void testCurrentPriceCalledWhenBidMessageReceived() throws Exception {
 		context.checking(new Expectations(){
 			{
-				oneOf(listener).currentPrice(192, 7);
+				one(listener).currentPrice(192, 7);
 			}
 		});
 		

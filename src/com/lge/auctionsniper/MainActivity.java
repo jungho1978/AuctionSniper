@@ -18,7 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements AuctionEventListener {
+public class MainActivity extends Activity implements SniperStatusListener {
 	private static final String TAG = "AuctionSniper";
 	
 	private static final String XMPP_SERVER_HOST = "localhost";
@@ -72,26 +72,13 @@ public class MainActivity extends Activity implements AuctionEventListener {
 			XMPPConnection connection = new XMPPConnection(config);
 			connection.connect();
 			connection.login(SNIPER_ID, SNIPER_PASSWORD);
-			chat = connection.getChatManager().createChat(AUCTION_ID, new AuctionMessageTranslator(this));
+			chat = connection.getChatManager().createChat(AUCTION_ID, new AuctionMessageTranslator(new AuctionSniper(chat, this)));
 			Message msg = new Message();
 			msg.setBody("SOLVersion: 1.1; Command: JOIN;");
 			chat.sendMessage(msg);
 		} catch (XMPPException e) {
 			Log.d(TAG, "", e);
 		}
-	}
-	
-	private HashMap<String, String> parse(Message message) {
-		HashMap<String, String> event = new HashMap<String, String>();
-		
-		String[] elements = message.getBody().split(";");
-		
-		for (String element : elements) {
-			String[] pair = element.split(":");
-			event.put(pair[0].trim(), pair[1].trim());
-		}
-		
-		return event;
 	}
 
 	private void setStatus(final int resId) {
@@ -110,21 +97,13 @@ public class MainActivity extends Activity implements AuctionEventListener {
 		return true;
 	}
 
-	public void auctionClosed() {
+	@Override
+	public void setLostStatus() {
 		setStatus(R.string.status_lost);		
 	}
 
 	@Override
-	public void currentPrice(int price, int increment) {
-		setStatus(R.string.status_bidding);
-		
-		Message message = new Message();
-		message.setBody("SOLVersion: 1.1; Command: BID; Price: " + (price + increment) + ";");
-		try {
-			chat.sendMessage(message);
-		} catch (XMPPException e) {
-			e.printStackTrace();
-		}
+	public void setBiddingStatus() {
+		setStatus(R.string.status_bidding);		
 	}
-
 }
