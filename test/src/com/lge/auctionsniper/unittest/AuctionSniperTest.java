@@ -6,16 +6,16 @@ import org.jivesoftware.smack.Chat;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 
+import com.lge.auctionsniper.AuctionNetworkManager;
 import com.lge.auctionsniper.AuctionSniper;
 import com.lge.auctionsniper.SniperStatusListener;
 
 public class AuctionSniperTest extends TestCase {
 	private final Mockery context = new Mockery();
-	private final SniperStatusListener listener = context.mock(SniperStatusListener.class);
+	private final SniperStatusListener statusListener = context.mock(SniperStatusListener.class);
+	private final AuctionNetworkManager network = context.mock(AuctionNetworkManager.class);
 	
-	private Chat NOTUSED_CHAT = null;
-	
-	private final AuctionSniper sniper = new AuctionSniper(NOTUSED_CHAT, listener);
+	private final AuctionSniper sniper = new AuctionSniper(network, statusListener);
 	
 	@Override
 	protected void tearDown() throws Exception {
@@ -26,7 +26,7 @@ public class AuctionSniperTest extends TestCase {
 	public void testSetLostStatusCalledWhenAuctionClosedCalled() {
 		context.checking(new Expectations(){
 			{
-				one(listener).setLostStatus();
+				one(statusListener).setLostStatus();
 			}
 		});
 		
@@ -36,10 +36,11 @@ public class AuctionSniperTest extends TestCase {
 	public void testSetBidStatusCalledWhenCurrentPriceCalled() {
 		context.checking(new Expectations(){
 			{
-				one(listener).setBiddingStatus();
+				one(network).bid(110);
+				one(statusListener).setBiddingStatus();
 			}
 		});
 		
-		sniper.currentPrice(0, 0);
+		sniper.currentPrice(100, 10);
 	}
 }

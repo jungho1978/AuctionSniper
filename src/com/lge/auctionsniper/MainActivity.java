@@ -1,10 +1,7 @@
 package com.lge.auctionsniper;
 
-import java.util.HashMap;
-
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -72,10 +69,12 @@ public class MainActivity extends Activity implements SniperStatusListener {
 			XMPPConnection connection = new XMPPConnection(config);
 			connection.connect();
 			connection.login(SNIPER_ID, SNIPER_PASSWORD);
-			chat = connection.getChatManager().createChat(AUCTION_ID, new AuctionMessageTranslator(new AuctionSniper(chat, this)));
-			Message msg = new Message();
-			msg.setBody("SOLVersion: 1.1; Command: JOIN;");
-			chat.sendMessage(msg);
+			chat = connection.getChatManager().createChat(AUCTION_ID, null);
+			
+			AuctionXmppNetworkManager network = new AuctionXmppNetworkManager(chat);
+			chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(network, this)));
+
+			network.join();
 		} catch (XMPPException e) {
 			Log.d(TAG, "", e);
 		}
