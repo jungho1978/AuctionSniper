@@ -75,4 +75,19 @@ public class FakeAuctionHouse {
 		currentChat.sendMessage(msg);
 	}
 
+	public void reportPrice(int price, int increment, String bidder) throws XMPPException {
+		Message msg = new Message();
+		msg.setBody("SOLVersion:1.1; Event:PRICE; CurrentPrice: " + price + "; Increment: " + increment + "; Bidder: " + bidder +";");
+		currentChat.sendMessage(msg);
+	}
+
+	public void hasReceivedBiddingFromSniper(int price) throws InterruptedException {
+		Message received = queue.poll(2, TimeUnit.SECONDS);
+		
+		Assert.assertNotNull(received);
+		String expected = "SOLVersion: 1.1; Command: BID; Price: " + price + ";";
+		String actual = received.getBody();
+		Assert.assertEquals(expected, actual);
+	}
+
 }

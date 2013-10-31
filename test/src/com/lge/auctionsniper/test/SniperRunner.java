@@ -35,4 +35,8 @@ public class SniperRunner {
 	private boolean isDisplayed(String expected) {
 		return solo.waitForText(expected, 1, DEFAULT_TIMEOUT);
 	}
+
+	public void showsBiddingStatus() {
+		Assert.assertTrue(isDisplayed(solo.getString(R.string.status_bidding)));
+	}
 }

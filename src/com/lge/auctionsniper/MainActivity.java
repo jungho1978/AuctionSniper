@@ -1,5 +1,7 @@
 package com.lge.auctionsniper;
 
+import java.util.HashMap;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
@@ -66,9 +68,25 @@ public class MainActivity extends Activity {
 							new MessageListener() {
 								
 								@Override
-								public void processMessage(Chat arg0, Message msg) {
-									if (msg.getBody().contains("CLOSE")) {
+								public void processMessage(Chat chat, Message msg) {
+									HashMap<String, String> event = parse(msg);
+									String eventType = event.get("Event");
+									
+									if (eventType.equalsIgnoreCase("close")) {
 										setStatus(R.string.status_lost);
+									} else if (eventType.equalsIgnoreCase("price")) {
+										setStatus(R.string.status_bidding);
+										
+										int price = Integer.valueOf(event.get("CurrentPrice"));
+										int increment = Integer.valueOf(event.get("Increment"));
+										
+										Message bidMsg = new Message();
+										bidMsg.setBody("SOLVersion: 1.1; Command: BID; Price: " + (price + increment) + ";");
+										try {
+											chat.sendMessage(bidMsg);
+										} catch (XMPPException e) {
+											e.printStackTrace();
+										}
 									}
 								}
 								
@@ -83,7 +101,18 @@ public class MainActivity extends Activity {
 		};
 		new Thread(run).start();
 	}
-
+	
+	private HashMap<String, String> parse(Message msg) {
+		HashMap<String, String> event = new HashMap<String, String>();
+		String[] parseStr = msg.getBody().split(";");
+		
+		for(String str :parseStr) {
+			String[] temp = str.split(":");
+			event.put(temp[0].trim(), temp[1].trim());
+		}
+		return event;
+	}
+	
 	private void setStatus(final int resId) {
 		runOnUiThread(new Runnable() {
 			@Override
