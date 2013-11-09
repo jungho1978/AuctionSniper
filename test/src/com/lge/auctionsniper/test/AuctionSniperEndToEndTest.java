@@ -28,7 +28,7 @@ public class AuctionSniperEndToEndTest extends
 		sniper.showsLostStatus();
 	}
 
-	public void testSniperBidsAuctionUntilAuctionClosed() throws Exception {
+	public void testSniperBidsForAuctionHighButLoses() throws Exception {
 		auction.startSellingItem();
 		sniper.join();
 		sniper.showsJoiningStatus();

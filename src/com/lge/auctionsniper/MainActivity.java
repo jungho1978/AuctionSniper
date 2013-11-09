@@ -68,28 +68,27 @@ public class MainActivity extends Activity {
 							new MessageListener() {
 								
 								@Override
-								public void processMessage(Chat chat, Message msg) {
-									HashMap<String, String> event = parse(msg);
-									String eventType = event.get("Event");
+								public void processMessage(Chat chat, Message message) {
+									HashMap<String, String> elements = parse(message);
+									String event = elements.get("Event");
 									
-									if (eventType.equalsIgnoreCase("close")) {
+									if (event.equalsIgnoreCase("close")) {
 										setStatus(R.string.status_lost);
-									} else if (eventType.equalsIgnoreCase("price")) {
+									} else if (event.equalsIgnoreCase("price")) {
 										setStatus(R.string.status_bidding);
 										
-										int price = Integer.valueOf(event.get("CurrentPrice"));
-										int increment = Integer.valueOf(event.get("Increment"));
+										int price = Integer.valueOf(elements.get("CurrentPrice"));
+										int increment = Integer.valueOf(elements.get("Increment"));
 										
-										Message bidMsg = new Message();
-										bidMsg.setBody("SOLVersion: 1.1; Command: BID; Price: " + (price + increment) + ";");
+										Message request = new Message();
+										request.setBody("SOLVersion: 1.1; Command: BID; Price: " + (price + increment) + ";");
 										try {
-											chat.sendMessage(bidMsg);
+											chat.sendMessage(request);
 										} catch (XMPPException e) {
 											e.printStackTrace();
 										}
 									}
 								}
-								
 							});
 					Message msg = new Message();
 					msg.setBody("SOLVersion:1.1; Command:JOIN;");
@@ -102,15 +101,15 @@ public class MainActivity extends Activity {
 		new Thread(run).start();
 	}
 	
-	private HashMap<String, String> parse(Message msg) {
-		HashMap<String, String> event = new HashMap<String, String>();
-		String[] parseStr = msg.getBody().split(";");
+	private HashMap<String, String> parse(Message message) {
+		HashMap<String, String> parsed = new HashMap<String, String>();
+		String[] fields = message.getBody().split(";");
 		
-		for(String str :parseStr) {
-			String[] temp = str.split(":");
-			event.put(temp[0].trim(), temp[1].trim());
+		for(String field :fields) {
+			String[] elements = field.split(":");
+			parsed.put(elements[0].trim(), elements[1].trim());
 		}
-		return event;
+		return parsed;
 	}
 	
 	private void setStatus(final int resId) {

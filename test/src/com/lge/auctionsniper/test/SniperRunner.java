@@ -21,14 +21,10 @@ public class SniperRunner {
 	}
 
 	public void showsJoiningStatus() {
-//		Espresso.onView(ViewMatchers.withId(R.id.status))
-//			.check(ViewAssertions.matches(ViewMatchers.withText("Joining")));
 		Assert.assertTrue(isDisplayed(solo.getString(R.string.status_joining)));
 	}
 
 	public void showsLostStatus() {
-//		Espresso.onView(ViewMatchers.withId(R.id.status))
-//		.check(ViewAssertions.matches(ViewMatchers.withText("Lost")));
 		Assert.assertTrue(isDisplayed(solo.getString(R.string.status_lost)));
 	}
 	
