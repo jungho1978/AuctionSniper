@@ -4,38 +4,52 @@ import com.lge.auctionsniper.MainActivity;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-public class AuctionSniperEndToEndTest extends
-		ActivityInstrumentationTestCase2<MainActivity> {
-	private FakeAuctionHouse auction = new FakeAuctionHouse();
-	private SniperRunner sniper;
-	
-	public AuctionSniperEndToEndTest() {
-		super(MainActivity.class);
-	}
-	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		sniper = new SniperRunner(this);
-	}
-	
-	public void testSniperJoinsAuctionUntilAuctionClosed() throws Exception {
-		auction.startSellingItem();
-		sniper.join();
-		sniper.showsJoiningStatus();
-		auction.hasReceivedJoinCommandFromSniper();
-		auction.announceClosedToSniper();
-		sniper.showsLostStatus();
-	}
-	
-	public void testSniperBidsHighButLoses() throws Exception {
-		auction.startSellingItem();
-		sniper.join();
-		sniper.showsJoiningStatus();
-		auction.hasReceivedJoinCommandFromSniper();
-		auction.reportPrice(1000, 100, "Other bidder");
-		auction.hasReceivedBid(1100);
-		auction.announceClosedToSniper();
-		sniper.showsLostStatus();
-	}
+public class AuctionSniperEndToEndTest extends ActivityInstrumentationTestCase2<MainActivity> {
+    private FakeAuctionHouse auction = new FakeAuctionHouse();
+    private SniperRunner sniper;
+
+    public AuctionSniperEndToEndTest() {
+        super(MainActivity.class);
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        sniper = new SniperRunner(this);
+    }
+
+    public void testSniperJoinsAuctionUntilAuctionClosed() throws Exception {
+        auction.startSellingItem();
+        sniper.join();
+        sniper.showsJoiningStatus();
+        auction.hasReceivedJoinCommandFromSniper();
+        auction.announceClosedToSniper();
+        sniper.showsLostStatus();
+    }
+
+    public void testSniperBidsHighButLoses() throws Exception {
+        auction.startSellingItem();
+        sniper.join();
+        sniper.showsJoiningStatus();
+        auction.hasReceivedJoinCommandFromSniper();
+        auction.reportPrice(1000, 100, "Other bidder");
+        sniper.showsBiddingStatus();
+        auction.hasReceivedBid(1100);
+        auction.announceClosedToSniper();
+        sniper.showsLostStatus();
+    }
+
+    public void testSniperBidsHighAndWins() throws Exception {
+        auction.startSellingItem();
+        sniper.join();
+        sniper.showsJoiningStatus();
+        auction.hasReceivedJoinCommandFromSniper();
+        auction.reportPrice(1000, 100, "Other bidder");
+        sniper.showsBiddingStatus();
+        auction.hasReceivedBid(1100);
+        auction.reportPrice(1100, 100, "Sniper");
+        sniper.showsWinningStatus();
+        auction.announceClosedToSniper();
+        sniper.showsWonStatus();
+    }
 }
