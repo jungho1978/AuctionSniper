@@ -24,8 +24,9 @@ public class AuctionMessageTranslator implements MessageListener {
         } else if (event.equalsIgnoreCase("price")) {
             int price = Integer.valueOf(elements.get("CurrentPrice"));
             int increment = Integer.valueOf(elements.get("Increment"));
+            String bidder = elements.get("Bidder");
 
-            listener.currentPrice(price, increment);
+            listener.currentPrice(price, increment, bidder);
         }
     }
     

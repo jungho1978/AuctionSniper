@@ -27,6 +27,6 @@ public class AuctionMessageTranslatorTest extends TestCase {
         msg.setBody("SOLVersion:1.1; Event:PRICE; CurrentPrice: 1000; Increment: 100; Bidder: kihoon;");
         translator.processMessage(null, msg);
         
-        verify(listener, atLeast(1)).currentPrice(1000, 100);
+        verify(listener, atLeast(1)).currentPrice(1000, 100, "kihoon");
     }
 }

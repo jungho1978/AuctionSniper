@@ -1,30 +1,25 @@
 package com.lge.auctionsniper;
 
-import java.util.HashMap;
-
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements AuctionEventListener {
+public class MainActivity extends Activity implements SniperStatusListener {
     private static final String TAG = "AuctionSniper";
 
     private static final String XMPP_SERVER_HOST = "localhost";
     private static final int XMPP_SERVER_PORT = 5222;
 
-    private static final String SNIPER_ID = "sniper";
+    public static final String SNIPER_ID = "sniper";
     private static final String SNIPER_PASSWORD = "sniper";
 
     private static final String AUCTION_ID = "auction-item-54321@localhost";
@@ -77,37 +72,6 @@ public class MainActivity extends Activity implements AuctionEventListener {
         return true;
     }
 
-    public void bid(int price) {
-        Message request = new Message();
-        request.setBody("SOLVersion: 1.1; Command: BID; Price: " + price + ";");
-        try {
-            chat.sendMessage(request);
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void join() {
-        Message msg = new Message();
-        msg.setBody("SOLVersion:1.1; Command:JOIN;");
-        try {
-            chat.sendMessage(msg);
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void auctionClosed() {
-        setStatus(R.string.status_lost);        
-    }
-
-    @Override
-    public void currentPrice(int price, int increment) {
-        setStatus(R.string.status_bidding);
-        bid(price + increment);
-    }
-
     public void joinAuction() {
         setStatus(R.string.status_joining);
 
@@ -119,8 +83,30 @@ public class MainActivity extends Activity implements AuctionEventListener {
         } catch (XMPPException e) {
             e.printStackTrace();
         }
-        chat = connection.getChatManager().createChat(AUCTION_ID, new AuctionMessageTranslator(this));
-        join();
+        chat = connection.getChatManager().createChat(AUCTION_ID, null);
+        Auction auction = new XmppAuction(chat);
+        chat.addMessageListener(new AuctionMessageTranslator(new AuctionEventManager(auction, this)));
+        auction.join();
+    }
+
+    @Override
+    public void sniperLost() {
+        setStatus(R.string.status_lost);        
+    }
+
+    @Override
+    public void sniperBidding() {
+        setStatus(R.string.status_bidding);
+    }
+
+    @Override
+    public void sniperWinning() {
+        setStatus(R.string.status_winning);
+    }
+    
+    @Override
+    public void sniperWon() {
+        setStatus(R.string.status_won);
     }
 
 }
