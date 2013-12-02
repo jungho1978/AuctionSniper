@@ -10,23 +10,23 @@ import static org.mockito.Mockito.*;
 import junit.framework.TestCase;
 
 public class AuctionMessageTranslatorTest extends TestCase {
-    
+
     AuctionEventListener listener = mock(AuctionEventListener.class);
     AuctionMessageTranslator translator = new AuctionMessageTranslator(listener);
-    
-    public void testAuctionClosedWhenCLOSEEventReceived() throws Exception {
+
+    public void testNofiesAuctionClosedWhenCloseEventReceived() throws Exception {
         Message msg = new Message();
         msg.setBody("SOLVersion:1.1; Event:CLOSE;");
         translator.processMessage(null, msg);
-        
+
         verify(listener, atLeast(1)).auctionClosed();
     }
-    
-    public void testCurrentPriceWhenPRICEEventReceived() throws Exception {
+
+    public void testNotifiesBidDetailsWhenCurrentPriceEventReceived() throws Exception {
         Message msg = new Message();
-        msg.setBody("SOLVersion:1.1; Event:PRICE; CurrentPrice: 1000; Increment: 100; Bidder: kihoon;");
+        msg.setBody("SOLVersion:1.1; Event:PRICE; CurrentPrice: 1000; Increment: 100; Bidder: Other bidder;");
         translator.processMessage(null, msg);
-        
-        verify(listener, atLeast(1)).currentPrice(1000, 100, "kihoon");
+
+        verify(listener, atLeast(1)).currentPrice(1000, 100, "Other bidder");
     }
 }

@@ -20,35 +20,41 @@ public class AuctionSniperEndToEndTest extends ActivityInstrumentationTestCase2<
 
     public void testSniperJoinsAuctionUntilAuctionClosed() throws Exception {
         auction.startSellingItem();
+        
         sniper.join();
         sniper.showsJoiningStatus();
         auction.hasReceivedJoinCommandFromSniper();
+        
         auction.announceClosedToSniper();
         sniper.showsLostStatus();
     }
 
-    public void testSniperBidsForAuctionHighButLoses() throws Exception {
+    public void testSniperMakesAHigherBidButLoses() throws Exception {
         auction.startSellingItem();
+        
         sniper.join();
         sniper.showsJoiningStatus();
         auction.hasReceivedJoinCommandFromSniper();
 
-        auction.reportPrice(100, 10, "currentBidder");
+        auction.reportPrice(100, 10, "other bidder");
         sniper.showsBiddingStatus();
+        
         auction.hasReceivedBiddingFromSniper(110);
 
         auction.announceClosedToSniper();
         sniper.showsLostStatus();
     }
     
-    public void testSniperBidsAuctionThenWon() throws Exception {
+    public void testSniperWinsAnAuctionByBiddingHigher() throws Exception {
         auction.startSellingItem();
+        
         sniper.join();
         sniper.showsJoiningStatus();
         auction.hasReceivedJoinCommandFromSniper();
 
-        auction.reportPrice(100, 10, "currentBidder");
+        auction.reportPrice(100, 10, "other bidder");
         sniper.showsBiddingStatus();
+        
         auction.hasReceivedBiddingFromSniper(110);
         
         auction.reportPrice(110, 10, MainActivity.SNIPER_ID);

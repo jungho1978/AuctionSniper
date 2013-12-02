@@ -108,5 +108,4 @@ public class MainActivity extends Activity implements SniperStatusListener {
     public void sniperWon() {
         setStatus(R.string.status_won);
     }
-
 }

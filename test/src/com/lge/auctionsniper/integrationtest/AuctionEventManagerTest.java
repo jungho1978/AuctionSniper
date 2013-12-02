@@ -16,39 +16,39 @@ public class AuctionEventManagerTest extends TestCase {
     Auction auction = mock(Auction.class);;
     AuctionEventManager manager = new AuctionEventManager(auction, listener);
 
-    public void testSniperLostCalledWhenAuctionClosed() throws Exception {
+    public void testStatusUpdatedToLostWhenAuctionClosedWithNoAction() throws Exception {
         manager.auctionClosed();
         verify(listener, atLeast(1)).sniperLost();
     }
 
-    public void testSniperBiddingCalledWhenCurrentPrice() throws Exception {
+    public void testStatusUpdatedToBiddingWhenCurrentPriceReceivedFromOtherBidder() throws Exception {
         int price = 1000;
         int increment = 100;
-        manager.currentPrice(price, increment, "Other");
+        manager.currentPrice(price, increment, "Other bidder");
         verify(listener, atLeast(1)).sniperBidding();
     }
 
-    public void testBidCalledWhenCurrentPrice() throws Exception {
+    public void testBidsHighWhenCurrentPriceReceivedFromOtherBidder() throws Exception {
         int price = 1000;
         int increment = 100;
-        manager.currentPrice(price, increment, "Other");
+        manager.currentPrice(price, increment, "Other bidder");
         verify(auction, atLeast(1)).bid(price + increment);
     }
-    
-    public void testSniperWinningCalledWhenCurrentPriceWithSniperAsBidder() throws Exception {
+
+    public void testStatusUpdatedToWinningWhenCurrentPriceReceivedFromSniper() throws Exception {
         manager.currentPrice(100, 10, MainActivity.SNIPER_ID);
         verify(listener, atLeast(1)).sniperWinning();
     }
-    
-    public void testSniperWonCalledWhenAuctionClosedIfSniperWinning() throws Exception {
+
+    public void testStatusUpdatedToWonWhenAuctionClosedUnderWinningStatus() throws Exception {
         manager.currentPrice(100, 10, MainActivity.SNIPER_ID);
         manager.auctionClosed();
         verify(listener, atLeast(1)).sniperWon();
     }
-    
-    public void testSniperLostCalledWhenAuctionClosedIfOtherBidsHighDuringSniperWining() throws Exception {
+
+    public void testStatusUpdatedToLostWhenAuctionClosedUnderWinnerChangedToOtherBidder() throws Exception {
         manager.currentPrice(100, 10, MainActivity.SNIPER_ID);
-        manager.currentPrice(110, 10, "Other");
+        manager.currentPrice(110, 10, "Other bidder");
         manager.auctionClosed();
         verify(listener, atLeast(1)).sniperLost();
     }

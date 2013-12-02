@@ -2,12 +2,10 @@ package com.lge.auctionsniper;
 
 
 public class AuctionEventManager implements AuctionEventListener {
-
     private SniperStatusListener listener;
     private Auction auction;
-    
     private boolean isWinning;
-
+    
     public AuctionEventManager(Auction auction, SniperStatusListener listener) {
         this.auction = auction;
         this.listener = listener;
@@ -25,11 +23,11 @@ public class AuctionEventManager implements AuctionEventListener {
 
     @Override
     public void currentPrice(int price, int increment, String bidder) {
-        if (bidder.equals(MainActivity.SNIPER_ID)) {
-            isWinning = true;
+        isWinning = bidder.equals(MainActivity.SNIPER_ID);
+        
+        if (isWinning) {
             listener.sniperWinning();
         } else {
-            isWinning = false;
             listener.sniperBidding();
             auction.bid(price + increment);
         }
