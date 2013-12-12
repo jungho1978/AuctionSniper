@@ -1,8 +1,8 @@
 package com.lge.auctionsniper;
 
 public interface SniperStatusListener {
-    public void setLostStatus();
-    public void setBiddingStatus();
-    public void setWinningStatus();
-    public void setWonStatus();
+    void sniperLost();
+    void sniperBidding(int lastPrice, int winningBid);
+    void sniperWinning(int lastPrice);
+    void sniperWon();
 }

@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
 public class AuctionMessageTranslator implements MessageListener {
@@ -15,30 +14,30 @@ public class AuctionMessageTranslator implements MessageListener {
     }
 
     @Override
-    public void processMessage(Chat chat, Message message) {
-        HashMap<String, String> event = parse(message);
+    public void processMessage(Chat chat, Message msg) {
+        HashMap<String, String> elements = parse(msg);
+        String event = elements.get("Event");
 
-        if (event.get("Event").equals("CLOSE")) {
+        if (event.equalsIgnoreCase("close")) {
             listener.auctionClosed();
-        } else if (event.get("Event").equals("PRICE")) {
-            int price = Integer.valueOf(event.get("CurrentPrice"));
-            int increment = Integer.valueOf(event.get("Increment"));
-            String bidder = event.get("Bidder");
+        } else if (event.equalsIgnoreCase("price")) {
+            int price = Integer.valueOf(elements.get("CurrentPrice"));
+            int increment = Integer.valueOf(elements.get("Increment"));
+            String bidder = elements.get("Bidder");
 
             listener.currentPrice(price, increment, bidder);
         }
     }
-
+    
     private HashMap<String, String> parse(Message message) {
-        HashMap<String, String> event = new HashMap<String, String>();
+        HashMap<String, String> parsed = new HashMap<String, String>();
+        String[] fields = message.getBody().split(";");
 
-        String[] elements = message.getBody().split(";");
-
-        for (String element : elements) {
-            String[] pair = element.split(":");
-            event.put(pair[0].trim(), pair[1].trim());
+        for (String field : fields) {
+            String[] elements = field.split(":");
+            parsed.put(elements[0].trim(), elements[1].trim());
         }
-
-        return event;
+        
+        return parsed;
     }
 }
