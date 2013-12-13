@@ -37,7 +37,7 @@ public class AuctionSniperEndToEndTest extends ActivityInstrumentationTestCase2<
         auction.hasReceivedJoinCommandFromSniper();
 
         auction.reportPrice(100, 10, "other bidder");
-        sniper.showsBiddingStatus();
+        sniper.showsBiddingStatus(100, 10);
         
         auction.hasReceivedBiddingFromSniper(110);
 
@@ -53,7 +53,7 @@ public class AuctionSniperEndToEndTest extends ActivityInstrumentationTestCase2<
         auction.hasReceivedJoinCommandFromSniper();
 
         auction.reportPrice(100, 10, "other bidder");
-        sniper.showsBiddingStatus();
+        sniper.showsBiddingStatus(100, 10);
         
         auction.hasReceivedBiddingFromSniper(110);
         

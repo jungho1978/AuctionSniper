@@ -9,9 +9,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements SniperStatusListener {
@@ -25,14 +24,17 @@ public class MainActivity extends Activity implements SniperStatusListener {
 
     private static final String AUCTION_ID = "auction-item-54321@localhost";
 
-    private TextView tv;
     private Chat chat;
+    private SnipersAdapter adapter;
+    private SniperState item = new SniperState();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv = (TextView)findViewById(R.id.status);
+        adapter = new SnipersAdapter(this, item);
+        ListView lv = (ListView)findViewById(R.id.list);
+        lv.setAdapter(adapter);
     }
 
     private void run() {
@@ -49,7 +51,8 @@ public class MainActivity extends Activity implements SniperStatusListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tv.setText(resId);
+                item.status = getString(resId);
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -60,16 +63,16 @@ public class MainActivity extends Activity implements SniperStatusListener {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.start:
             run();
             return true;
-            
-        default :
-            return super.onOptionsItemSelected(item);    
+
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -92,7 +95,7 @@ public class MainActivity extends Activity implements SniperStatusListener {
 
     @Override
     public void sniperLost() {
-        setStatus(R.string.status_lost);        
+        setStatus(R.string.status_lost);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class MainActivity extends Activity implements SniperStatusListener {
     public void sniperWinning() {
         setStatus(R.string.status_winning);
     }
-    
+
     @Override
     public void sniperWon() {
         setStatus(R.string.status_won);
