@@ -8,6 +8,7 @@ import org.jivesoftware.smack.XMPPException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -24,7 +25,6 @@ public class MainActivity extends Activity implements SniperStatusListener {
 
     private static final String AUCTION_ID = "auction-item-54321@localhost";
 
-    private Button button;
     private TextView tv;
     private Chat chat;
 
@@ -32,18 +32,7 @@ public class MainActivity extends Activity implements SniperStatusListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        button = (Button)findViewById(R.id.start_button);
         tv = (TextView)findViewById(R.id.status);
-
-        button.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                run();
-            }
-
-        });
     }
 
     private void run() {
@@ -70,6 +59,18 @@ public class MainActivity extends Activity implements SniperStatusListener {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.start:
+            run();
+            return true;
+            
+        default :
+            return super.onOptionsItemSelected(item);    
+        }
     }
 
     public void joinAuction() {
