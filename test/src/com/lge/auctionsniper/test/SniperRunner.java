@@ -16,8 +16,7 @@ public class SniperRunner {
     }
 
     public void join() {
-        View view = (View)solo.getView(R.id.start_button);
-        solo.clickOnView(view);
+        solo.clickOnMenuItem("Start");
     }
 
     public void showsJoiningStatus() {
